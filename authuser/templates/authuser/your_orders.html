@@ -1,0 +1,244 @@
+{% extends "authuser/layout.html" %}
+{% block body %}
+    
+        <h1 style="display:none;" id="user">{{user}}</h1>
+    
+    {% for item in pastOrderItems %}
+        
+        <div class="container" style="justify-content: center; align-items: center; padding:10px;">
+            <div class="item" style="margin:5px;">
+                <a href="{% url 'productview' id=item.product.id %}"><img src="{{item.product.image_link}}" width="200"></a>
+            </div>
+            <div class="item" style="margin:5px;">
+                <p>{{item.product.name}}</p>
+                {% if item.product in products_reviewed %}
+                    <p style="margin:5px;">Thank you for leaving a review of this item.</div>
+                    <button class="btn btn-light buttons" id="buttons{{item.id}}" style="margin:5px;display:none;">Leave Review</button>
+                {% else %}
+                    <button class="btn btn-light buttons" id="buttons{{item.id}}" style="margin:5px;">Leave Review</button>
+                {% endif %}
+                
+            </div>
+            <div class="container" style="justify-content: center; align-items: center; padding:10px;">
+                <textarea style="display:none; max-width:700px;" rows="4" placeholder="Leave your review here" class="textareas form-control" id="textareas{{item.id}}"></textarea>
+            </div>
+            <div class="container submitsdiv" id="submitsdiv{{item.id}}" style="display:none; justify-content: center; align-items: center; padding:10px;">
+                <button style="background-color: #50A5AC;" class="btn text-white submitsbutton" id="submitsbutton{{item.id}}">Submit</button>
+                <p style="display:none;" id="product{{item.id}}">{{item.product.id}}</p>
+            </div>
+    {% endfor %}
+    {% if not pastOrderItems %}
+        <div style="margin: 20px; text-align: center;"><p>You haven't ordered any items.<br><a href ="{%url 'home'%}">Click here</a> to browse our full selection of kits.</p></div>
+    {% endif %}
+            <div id="starrating" style="display:none;">
+                <span class="one fa fa-star checked"></span>
+                <span class="two fa fa-star checked"></span>
+                <span class="three fa fa-star checked"></span>
+                <span class="four fa fa-star checked"></span>
+                <span class="five fa fa-star"></span>
+            </div>   
+        <script>
+            addEventListener("DOMContentLoaded", (event) => {
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let i = 0; i < cookies.length; i++) {
+                                    const cookie = cookies[i].trim();
+                                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                        return cookieValue;
+                    }
+                    
+                  let one = false;
+                  let rating = 4;
+                  let stars = document.querySelector('#starrating');
+                  let buttons = document.querySelectorAll('.buttons');
+                  let submitsdiv = document.querySelectorAll('.submitsdiv');
+                  let textareas = document.querySelectorAll('.textareas');
+                  let buttonclicked;
+                  for(let i =0;i<buttons.length;i++){
+                    buttons[i].addEventListener("click", (event)=>{
+                        buttonclicked = event.target;
+                        submitsdiv[i].style.display = "flex";
+                        textareas[i].style.display = "flex";
+                        let s = submitsdiv[i]
+                        stars.style.display = "block";
+                        s.before(stars)
+                        for(let j=0;j<buttons.length;j++){
+                            if(j!==i){
+                                submitsdiv[j].style.display = "none";
+                                textareas[j].style.display = "none";
+                            }
+                        }
+                        
+                    })
+                    
+                    
+                  }
+                  let submitsbutton = document.querySelectorAll('.submitsbutton')
+                  for(let i = 0;i<submitsbutton.length;i++){
+                    submitsbutton[i].addEventListener('click', async function (event) {
+                        idnumber = submitsbutton[i].id.slice(13)
+                        textidnumber = textareas[i].id.slice(9)
+                        let textareawithcontent = document.querySelector(`#textareas${idnumber}`).value
+                        let productid =  document.querySelector(`#product${idnumber}`).innerHTML
+                        console.log(productid)
+                        console.log(textareawithcontent)
+                        let submitsdivtohide = document.querySelector(`#submitsdiv${idnumber}`)
+                        let textareatohide = document.querySelector(`#textareas${idnumber}`)
+                        console.log(submitsdivtohide)
+                        let user = document.querySelector('#user').innerHTML
+                        const csrftoken = getCookie('csrftoken');
+                        //if(textareawithcontent!==""){
+                            await fetch('../authuser/review',{
+                                method: 'PUT',
+                                headers: {'X-CSRFToken': csrftoken},
+                                body: JSON.stringify({
+                                    productid: productid,
+                                    content: textareawithcontent,
+                                    rating: rating,
+                                    user: user
+                                })
+                            })
+                            .then(()=>{
+                                submitsdivtohide.style.display = "none";
+                                textareatohide.style.display = "none";
+                                stars.style.display = "none";
+                                buttonclicked.style.display = "none";
+                                console.log(event.target)
+                                let p = document.createElement('p')
+                                p.innerHTML = "Thank you for leaving a review of this item."
+                                p.style.margin = "5px"
+                                buttonclicked.before(p)
+                            })
+                        //}
+
+                    })
+                  }
+                  document.querySelector('.one').addEventListener('click', (event)=>{
+                        if(!one){
+                            if(!document.querySelector('.one').classList.contains('checked')){
+                                document.querySelector('.one').classList.add('checked')
+                            }
+                            if(document.querySelector('.two').classList.contains('checked')){
+                                document.querySelector('.two').classList.remove('checked')
+                            }
+                            if(document.querySelector('.three').classList.contains('checked')){
+                                document.querySelector('.three').classList.remove('checked')
+                            }
+                            if(document.querySelector('.four').classList.contains('checked')){
+                                document.querySelector('.four').classList.remove('checked')
+                            }
+                            if(document.querySelector('.five').classList.contains('checked')){
+                                document.querySelector('.five').classList.remove('checked')
+                            }
+                            one = true
+                            rating = 1;
+                        }
+                        else{
+                            if(document.querySelector('.one').classList.contains('checked')){
+                                document.querySelector('.one').classList.remove('checked')
+                            }
+                            if(document.querySelector('.two').classList.contains('checked')){
+                                document.querySelector('.two').classList.remove('checked')
+                            }
+                            if(document.querySelector('.three').classList.contains('checked')){
+                                document.querySelector('.three').classList.remove('checked')
+                            }
+                            if(document.querySelector('.four').classList.contains('checked')){
+                                document.querySelector('.four').classList.remove('checked')
+                            }
+                            if(document.querySelector('.five').classList.contains('checked')){
+                                document.querySelector('.five').classList.remove('checked')
+                            }
+                            one = false
+                            rating = 0;
+                        }
+                    })
+                    document.querySelector('.two').addEventListener('click', (event)=>{
+                        if(!document.querySelector('.one').classList.contains('checked')){
+                            document.querySelector('.one').classList.add('checked')
+                        }
+                        if(!document.querySelector('.two').classList.contains('checked')){
+                            document.querySelector('.two').classList.add('checked')
+                        }
+                        if(document.querySelector('.three').classList.contains('checked')){
+                            document.querySelector('.three').classList.remove('checked')
+                        }
+                        if(document.querySelector('.four').classList.contains('checked')){
+                            document.querySelector('.four').classList.remove('checked')
+                        }
+                        if(document.querySelector('.five').classList.contains('checked')){
+                            document.querySelector('.five').classList.remove('checked')
+                        }
+                        one=false
+                        rating = 2;
+                    })
+                  document.querySelector('.three').addEventListener('click', (event)=>{
+                        if(!document.querySelector('.one').classList.contains('checked')){
+                            document.querySelector('.one').classList.add('checked')
+                        }
+                        if(!document.querySelector('.two').classList.contains('checked')){
+                            document.querySelector('.two').classList.add('checked')
+                        }
+                        if(!document.querySelector('.three').classList.contains('checked')){
+                            document.querySelector('.three').classList.add('checked')
+                        }
+                        if(document.querySelector('.four').classList.contains('checked')){
+                            document.querySelector('.four').classList.remove('checked')
+                        }
+                        if(document.querySelector('.five').classList.contains('checked')){
+                            document.querySelector('.five').classList.remove('checked')
+                        }
+                        one=false
+                        rating = 3;
+                    })
+                    document.querySelector('.four').addEventListener('click', (event)=>{
+                        if(!document.querySelector('.one').classList.contains('checked')){
+                            document.querySelector('.one').classList.add('checked')
+                        }
+                        if(!document.querySelector('.two').classList.contains('checked')){
+                            document.querySelector('.two').classList.add('checked')
+                        }
+                        if(!document.querySelector('.three').classList.contains('checked')){
+                            document.querySelector('.three').classList.add('checked')
+                        }
+                        if(!document.querySelector('.four').classList.contains('checked')){
+                            document.querySelector('.four').classList.add('checked')
+                        }
+                        if(document.querySelector('.five').classList.contains('checked')){
+                            document.querySelector('.five').classList.remove('checked')
+                        }
+                        one=false
+                        rating = 4;
+                    })
+                    document.querySelector('.five').addEventListener('click', (event)=>{
+                        if(!document.querySelector('.one').classList.contains('checked')){
+                            document.querySelector('.one').classList.add('checked')
+                        }
+                        if(!document.querySelector('.two').classList.contains('checked')){
+                            document.querySelector('.two').classList.add('checked')
+                        }
+                        if(!document.querySelector('.three').classList.contains('checked')){
+                            document.querySelector('.three').classList.add('checked')
+                        }
+                        if(!document.querySelector('.four').classList.contains('checked')){
+                            document.querySelector('.four').classList.add('checked')
+                        }
+                        if(!document.querySelector('.five').classList.contains('checked')){
+                            document.querySelector('.five').classList.add('checked')
+                        }
+                        one=false
+                        rating = 5;
+                    })
+                }
+            )
+
+        </script>
+    
+{% endblock %}

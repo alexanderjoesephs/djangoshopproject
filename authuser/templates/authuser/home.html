@@ -1,0 +1,17 @@
+{% extends "authuser/layout.html" %}
+{% block body %}
+  {%if intro%}
+  <!--<div class="m-3" style="text-align: center;">We sell classic football kits. Register for an account and start shopping with us today!</div>-->
+  <!--  <img src="https://i.postimg.cc/634v3bQ1/front-4.jpg" style="width:100vw; position:relative;">-->
+    
+  {%endif%}
+  <div class="container" style="margin-top: 20px;">
+    {% for product in products %}
+      <div style="margin-left:3px; margin-right:3px; margin-bottom: 30px;" class="item">
+        <a href="{% url 'productview' id=product.id %}"><img width="350" src="{{product.image_link}}"></a>
+        <p>{{product.name}}</p>
+        <p>£{{product.price}}0</p>
+      </div>
+    {%endfor%}
+  </div>
+{% endblock %}

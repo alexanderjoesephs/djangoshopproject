@@ -1,0 +1,117 @@
+{% extends "authuser/layout.html" %}
+{% block body %}
+  <div>
+    
+    <div class="container" style="justify-content:space-evenly; align-items: center; margin-bottom:30px" >
+      <div class="item">
+        <img src="{{product.image_link}}" width="420" style="max-width: 100%;">
+      </div>
+      {% if user.is_authenticated %}
+        <div class="item" style="max-width:170px">
+          
+          <p>{{product}}</p>
+          <p>£{{product.price}}0</p>
+          <form class="form" method="post" action="{% url 'productview' id=product.id %}">
+            {% csrf_token %}
+            <div style="margin:10px;" class="form-group">
+              <select name="quantity" class="form-select" style="width:100%">
+                <option  value="q">Quantity</option>
+                <option  value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+              </select>
+            </div>
+            <div style="margin:10px;" class="form-group">
+              <select name="size" class="form-select" aria-label="Default select example" style="width:100%;">
+                <option selected>Size</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+              </select>
+            </div>
+            <div style="margin:10px;" class="form-group">
+              <button class="btn text-white" style="width:100%; background-color: #50A5AC" type="submit">Add to cart</button>
+            </div>
+          </form>
+          {%if form_message%}
+            <p>{{form_message}}</p>
+          {% endif %}
+        </div>
+      {% else %}
+      <div class="item">
+        <p>Log in or create an account to start shopping!</p>
+      </div>
+      {% endif %}
+    </div>
+    {%if reviews%}
+    <div class="container" style="justify-content:center; align-items: center; margin-bottom:10px" >
+      <h3>Customer reviews for {{product.name}}</h3>
+    </div>
+    {%endif%}
+    <!--reviews section-->
+    {%for review in reviews%}
+    <div class="container" style="justify-content:center; align-items: center; margin-bottom:10px" >
+      {{review.author.name}} wrote 
+    </div>
+    
+    <div class="container" style="justify-content:space-evenly; align-items: center; margin-bottom:10px" >
+      {{review.content}}
+      <p style="display:none;" class="rating" id="rating{{review.id}}">{{review.rating}}</p>
+    </div>
+    <div class="container renderStarsHere" style="justify-content:center; align-items: center; margin-bottom:10px" >
+      
+    </div>
+    <hr class="hr">
+    {%endfor%}
+  </div>
+  <script>
+    addEventListener("DOMContentLoaded", (event) => {
+      let list = document.querySelectorAll('.rating')
+      let stars = []
+      for(let i = 0; i<list.length;i++){
+        let starsToRender = parseInt(list[i].innerHTML);
+        stars.push(starsToRender)
+      }
+      console.log(stars)
+      let divList = document.querySelectorAll('.renderStarsHere')
+      console.log(divList)
+      for(let i=0;i<divList.length;i++){
+        
+        let starchecked = '<span style="font-size:25px" class="one fa fa-star checked"></span>'
+        let starunchecked = '<span style="font-size:25px" class="one fa fa-star"></span>'
+        
+        for(let j =0; j<stars[i]; j++){
+          divList[i].innerHTML = divList[i].innerHTML + starchecked;
+        } 
+        for(let j =stars[i]; j<5;j++){
+          divList[i].innerHTML = divList[i].innerHTML + starunchecked;
+        }
+      }
+
+
+      /*
+      starsToRender = parseInt(document.querySelector('#rating').innerHTML)
+      div = document.querySelector('#renderstarshere')
+      stars = document.createElement('div')
+      starchecked = '<span class="one fa fa-star checked"></span>'
+      starunchecked = '<span class="one fa fa-star"></span>'
+      stars.innerHTML = ''
+      for(let i=0;i<starsToRender;i++){
+        stars.innerHTML = stars.innerHTML + starchecked
+      }
+      for(let i=starsToRender; i<5;i++){
+        stars.innerHTML = stars.innerHTML + starunchecked
+      }
+      div.appendChild(stars);
+      */
+    })
+  </script>
+{% endblock %}

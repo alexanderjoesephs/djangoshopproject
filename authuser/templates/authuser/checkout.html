@@ -1,0 +1,47 @@
+{% extends "authuser/layout.html" %}
+{% block body %}
+  <div style="max-width: 500px; margin: 0 auto;">
+    {%for item in users_items%}
+    <div class="row align-items-center" style="margin-top:20px">
+      <div class="col">
+        <img src="{{item.product.image_link}}" style="width:100%">
+      </div>
+      <div class="col">{{item.product.name}}, {{item.size}} x{{item.quantity}}</div>
+      <div class="col">
+        <form class="form-group" method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" value="{{item.id}}" name="item_to_edit">
+        <select name="new_quantity" class="form-select" style="width:80%;margin:5px;">
+          <option  value="q">Quantity</option>
+          <option  value="0">0</option>
+          <option  value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+        <button type="submit" style="width:80%; margin:5px;" class="btn btn-light">Update</button>
+      </div>
+      
+        
+      </form>
+    </div>
+    {%endfor%}
+    {% if user.is_authenticated and users_items%}
+    <div class="row align-items-center" style="margin: 20px">
+      <form method="post" action="{%url 'your_orders'%}">
+        {% csrf_token %}
+        <button style="background-color: #50A5AC; width:100%" class="btn text-white">Checkout cart £{{total_cost}}0</button>
+      </form>
+    </div>
+    {%endif%}
+    {% if not users_items %}
+      <div style="margin: 20px; text-align: center;"><p>Your shopping cart is empty.<br><a href ="{%url 'home'%}">Click here</a> to browse our full selection of kits.</p></div>
+    {% endif %}
+    
+  </div>
+{% endblock %}

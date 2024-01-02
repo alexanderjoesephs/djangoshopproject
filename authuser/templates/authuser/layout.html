@@ -1,0 +1,171 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="https://i.postimg.cc/rwQnznrX/My-project-1-2.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Classic Kits</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js" integrity="sha384-heAjqF+bCxXpCWLa6Zhcp4fu20XoNIA98ecBC1YkdXhszjoejr5y9Q77hIrv8R9i" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      body{font-family: 'lato';}
+      .container{
+        display:flex;
+        flex-flow: wrap;
+        justify-content:  flex-start ;
+      }
+      .item{text-align:center;}
+      p { margin:0 }
+    
+      
+      
+      .fa-star{color:#c6c7c8; font-size: 35px;}
+
+      .checked{color: #50A5AC;}
+
+      hr {  
+        
+        width:95%;
+        
+        
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+    </style>
+  </head>
+  <body>
+    
+    
+    
+    
+    <div>
+      <nav class="navbar navbar-expand-sm" style="background-color: #50A5AC; margin-bottom:0; padding:0">
+          <div class="container-fluid">
+              <a href="{% url 'home'%}" class="navbar-brand"><img src="https://i.postimg.cc/fz5WyjB7/My-project-1-fully-croppped.jpg" width="120"></a>
+              <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+              <div id="navbarCollapse" class="collapse navbar-collapse">
+                  <ul class="nav navbar-nav">
+                    
+                    {% if not user.is_authenticated %}
+
+                      <li class="nav-item">
+                          <a href="{% url 'createaccount'%}" class="nav-link text-white" style="font-size: 130%">Create Account</a>
+                      </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown" style="font-size: 130%">Your Cart</a>
+                      <div class="dropdown-menu">
+                        {% if users_items %}
+                          {% for item in users_items %}
+                            <a href="{% url 'productview' id=item.product.id %}" class="dropdown-item">{{item.product.name}}, {{item.size}} x{{item.quantity}}</a>
+                          {%endfor%}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'checkout'%}">Checkout cart</a>
+                        {% else %}
+                          <p class="dropdown-item">Cart currently empty</p>
+                        {%endif%}
+                      </div>
+                    </li>
+                    {% endif %}
+                    
+                      
+                    
+                      <li class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown text-white" data-bs-toggle="dropdown" style="font-size: 130%">Browse by league</a>
+                          <div class="dropdown-menu">
+                              <a href="{% url 'range' league='England' %}" class="dropdown-item">England</a>
+                              <a href="{% url 'range' league='Italy' %}" class="dropdown-item">Italy</a>
+                              <a href="{% url 'range' league='Spain' %}"class="dropdown-item">Spain</a>
+                              <a href="{% url 'range' league='France' %}"class="dropdown-item">France</a>
+                              <a href="{% url 'range' league='Scotland' %}"class="dropdown-item">Scotland</a>
+                              <a href="{% url 'range' league='Belgium' %}"class="dropdown-item">Belgium</a>
+                          </div>
+                      </li>
+                      <li class="nav-item dropdown ">
+                        <a href="#" class="nav-link text-white"  data-bs-toggle="dropdown" style="font-size: 130%">Browse by year</a>
+                        <div class="dropdown-menu">
+                        <form class="form" method="post" action="{% url 'timerange' %}">
+                          {% csrf_token %}
+                          <div class="m-2">
+                            <div class="form-group">
+                              <!--<input class="form-control form-control-sm" style="width:200px; margin:10px;" placeholder="From" name="fromyear" type="number">-->
+                              <label for="customRange1" class="form-label">From</label>
+                              <input type="range" class="form-range" value="1950" min="1950" max="2000" id="customRange1" name="fromyear" oninput="this.nextElementSibling.value = this.value">
+                              <output>1950</output>
+                            </div>
+                            <div class="form-group">
+                              <!--<input class="form-control form-control-sm" style="width:200px; margin:10px;" placeholder="To" name="toyear" type="number">-->
+                              <label for="customRange2" class="form-label">To</label>
+                              <input type="range" class="form-range" value="2000" min="1950" max="2000" id="customRange2" name="toyear" oninput="this.nextElementSibling.value = this.value">
+                              <output>2000</output>
+                            </div>
+                            <div class="form-group">
+                              <button type="submit" class="btn btn-light" style="width:200px; margin:10px;">Search</button>
+                            </div>
+                          </div>
+                        </form>
+                        </div>
+                      </li>
+                      {% if user.is_authenticated %}
+                      <li class="nav-item">
+                        <a href="{% url 'your_orders' %}" style="font-size: 130%" class="nav-link text-white">Your orders</a>
+                      </li>
+                      {% endif %}
+                  </ul>
+                  <ul class="nav navbar-nav ms-auto">
+                      <li class="nav-item dropdown">
+                          {% if not user.is_authenticated %}
+                          <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown" style="font-size: 130%">Log in</a>
+                          <div class="dropdown-menu dropdown-menu-end" style="width:230px;padding:10px;">
+                            {% if not user.is_authenticated %}
+                              <form class="form" method="post" action="{% url 'home' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                  <input class="form-control form-control-sm" style="width:100%; margin-top:5px; margin-bottom:5px;" placeholder="email" value="demo@mail.com" name="email" type="text">
+                                </div>
+                                <div class="form-group">
+                                  
+                                  <input style="width:100%; margin-top:5px; margin-bottom:5px;" class="form-control form-control-sm" placeholder="password" name="password" value="demoword" type="password">
+                                </div>
+                                <div class="form-group">
+                                  <button type="submit" class="btn btn-light" style="width:100%; margin-top:5px; margin-bottom:5px;">Login</button>
+                                </div>
+                              </form>
+                            {% endif %}
+                            
+                          </div>
+                          {% else %}
+                            <li class="nav-item text-white">
+                              <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button style="background-color:#50A5AC" class=" btn btn-lg text-white" type="submit" style="font-size: 130%">Logout</button>
+                              </form>
+                            </li>
+                            {% endif %}
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </nav>    
+    </div>
+    {% if message %}
+      <div class="m-4">
+      {{message}}
+      </div>
+    {% endif %}
+    <div style="margin-top: 30px;">
+    {% block body %}
+    {% endblock %}
+    </div>
+  </body>
+</html>
+

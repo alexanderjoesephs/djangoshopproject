@@ -1,0 +1,37 @@
+{% extends "authuser/layout.html" %}
+{% block body %}
+    
+    {% if not user.is_authenticated %}
+      <div style="text-align: center;">
+        <form class="form" method="post" action="{% url 'createaccount' %}">
+        {% csrf_token %}
+          <div style="margin:10px;" class="form-group">
+            <input placeholder="Enter email" name="email" type="text">
+          </div>
+          <div style="margin:10px;" class="form-group">
+            <input placeholder="Enter username" name="username" type="text">
+          </div>
+          <div style="margin:10px;" class="form-group">
+            <input placeholder="Enter password" name="password" type="password">
+          </div>
+          <div style="margin:10px;" class="form-group">
+            <input placeholder="Confirm password" name="confirm_password" type="password">
+          </div>
+          <div style="margin:10px;" class="form-group">
+            <button class="btn text-white" style="background-color: #50A5AC;" type="submit">Register</button>
+            
+          </div>
+        </form>
+      </div>
+    {% endif %}
+    {% if user.is_authenticated %}
+      <div style="margin-left:40px;">
+        <h5>Please logout before you create an account</h5>
+      </div>
+    {% endif %}
+    {%if message %}
+        {{message}}
+    {% endif %}
+  
+
+  {% endblock %}
